@@ -7,9 +7,9 @@ services:
 #      args:
 #        arch: amd64
       dockerfile: airflow2.1.2-Dockerfile
-    image: kolisachint/airflow:2.1.2
+    image: docker.io/kolisachint/airflow:2.1.2
     ports: 
-      - 58080:8080s
+      - 58080:8080
     networks: 
       - dev-network
 

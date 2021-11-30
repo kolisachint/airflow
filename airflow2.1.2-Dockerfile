@@ -1,0 +1,56 @@
+FROM ubuntu:20.04
+
+# Never prompt the user for choices on installation/configuration of packages
+ENV DEBIAN_FRONTEND noninteractive
+ENV TERM linux
+
+# Airflow
+ARG AIRFLOW_HOME=/appl/airflow
+ARG AIRFLOW_DEPS=""
+ARG PYTHON_DEPS=""
+ENV AIRFLOW_HOME=/appl/airflow
+
+# Define en_US.
+ENV LANGUAGE en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV LC_CTYPE en_US.UTF-8
+ENV LC_MESSAGES en_US.UTF-8
+
+
+ARG AIRFLOW_VERSION=2.1.2
+ARG PYTHON_VERSION=3.8
+ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-no-providers-${PYTHON_VERSION}.txt"
+
+COPY airflow2.1.2-entrypoint.sh /airflow2.1.2-entrypoint.sh
+COPY airflow2.1.2-requirements.txt /airflow2.1.2-requirements.txt
+
+# Ensure apt is in non-interactive to avoid prompts
+RUN export DEBIAN_FRONTEND=noninteractive && apt-get update  \
+  && apt-get -y install --no-install-recommends python3-pip gcc python3-dev mariadb-server \
+  && pip3 --disable-pip-version-check --no-cache-dir \
+      install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}" \
+  && pip3 --disable-pip-version-check --no-cache-dir \
+      install -r /airflow2.1.2-requirements.txt \
+  && apt-get autoremove -y && apt-get clean -y \
+  && rm -rf /var/lib/apt/lists/*  \
+        /tmp/* \
+        /var/tmp/* \
+        /usr/share/man \
+        /usr/share/doc \
+        /usr/share/doc-base \
+  && chmod -R 755 /airflow*
+
+ENTRYPOINT ["/airflow2.1.2-entrypoint.sh"]
+CMD ["webserver"]
+
+EXPOSE 8080 
+
+# docker build . -t airflow:2.1.2 -f airflow2.1.2-Dockerfile
+# docker build . --no-cache -t ubuntu20.04:airflow2.1.2 -f airflow2.1.2-Dockerfile
+# docker run -d -p 80:8080 --name airflow2.1.2 ubuntu20.04:airflow2.1.2 
+# docker tag ubuntu20.04:airflow2.1.2 kolisachint/ubuntu20.04:airflow2.1.2
+# docker push kolisachint/ubuntu20.04:airflow2.1.2
+# docker exec -it 5fbf3f268637 /bin/sh
+# docker run -d --net=host --name airflow2.1.2 ubuntu20.04:airflow2.1.2 
+
