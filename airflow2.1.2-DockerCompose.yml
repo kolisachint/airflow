@@ -4,10 +4,12 @@ services:
   airflow2.1.2:
     build: 
       context: .
-#      args:
-#        arch: amd64
+      args:
+        arch: amd64
       dockerfile: airflow2.1.2-Dockerfile
     image: docker.io/kolisachint/airflow:2.1.2
+    volumes:
+      - /Users/sachinkoli/appl/data/:/appl/
     ports: 
       - 58080:8080
     networks: 

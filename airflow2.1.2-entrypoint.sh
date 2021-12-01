@@ -14,7 +14,7 @@ TRY_LOOP="20"
 
 # Load DAGs examples (default: Yes)
 if [[ -z "$AIRFLOW__CORE__LOAD_EXAMPLES" && "${LOAD_EX:=n}" == n ]]; then
-  AIRFLOW__CORE__LOAD_EXAMPLES=False
+  AIRFLOW__CORE__LOAD_EXAMPLES=True
 fi
 
 export \
@@ -23,10 +23,6 @@ export \
   AIRFLOW__CORE__FERNET_KEY \
   AIRFLOW__CORE__LOAD_EXAMPLES \
 
-# Install custom python package if requirements.txt is present
-#if [ -e "/airflow2.1.2-requirements.txt" ]; then
-#    $(command -v pip) install --user -r /airflow2.1.2-requirements.txt
-#fi
 
 wait_for_port() {
   local name="$1" host="$2" port="$3"
@@ -142,3 +138,4 @@ airflow users create \
           --role Admin \
           --email admin@example.org \
           --password nopasswd
+
